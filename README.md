@@ -240,6 +240,8 @@ This project represents a complete implementation of an Agentic AI application m
 **Demo Video**: [(https://youtu.be/0-zydyh3uoE)]  
 **GitHub Repository**: [(https://github.com/fc9399/MemoHub)]
 
+---
+
 ## 🙏 **Credits & Acknowledgments**
 
 ### Team Members
