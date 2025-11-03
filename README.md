@@ -237,8 +237,7 @@ This project represents a complete implementation of an Agentic AI application m
 - ✅ Demonstrates practical value with memory-driven AI interactions
 - ✅ Production-ready with authentication, API management, and monitoring
 
-**Demo Video**: [Link to be added]  
-**Live Demo**: [Link to be added]  
+**Demo Video**: [(https://youtu.be/0-zydyh3uoE)]  
 **GitHub Repository**: [(https://github.com/fc9399/MemoHub)]
 
 ## 🙏 **Credits & Acknowledgments**
