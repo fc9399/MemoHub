@@ -1,0 +1,23 @@
+Cloudflare Tunnel Information
+========================================
+
+Tunnel URL: https://raw-measurement-removing-mails.trycloudflare.com
+
+Local Port: 8012
+Forwarding to: http://localhost:8012
+
+Process ID: 70033, 69581
+Log File: cloudflared.log
+
+Test Command:
+curl -H "Authorization: Bearer <your_api_key>" \
+     https://raw-measurement-removing-mails.trycloudflare.com/api/memos
+
+API Endpoints:
+- GET /api/memos
+- GET /api/memos/search?q=keyword
+- GET /api/memos/:id
+
+Notes:
+- This URL is temporary and will change after process restart
+- Save your API Key (only shown once)

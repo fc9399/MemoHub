@@ -1,0 +1,353 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MemoHub API",
+    "description": "MemoHub - 个人记忆管理系统 API，用于检索和搜索记忆",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://raw-measurement-removing-mails.trycloudflare.com",
+      "description": "Cloudflare Tunnel (临时URL，重启后会变化)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key"
+      }
+    },
+    "schemas": {
+      "MemoryUnit": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "记忆的唯一标识符"
+          },
+          "content": {
+            "type": "string",
+            "description": "记忆的完整内容"
+          },
+          "memory_type": {
+            "type": "string",
+            "enum": ["text", "image", "audio", "document", "conversation"],
+            "description": "记忆类型"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "记忆的元数据（来源、标签等）"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          },
+          "source": {
+            "type": "string",
+            "description": "记忆来源（如 notion、upload 等）"
+          },
+          "summary": {
+            "type": "string",
+            "description": "记忆摘要"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "标签列表"
+          }
+        }
+      },
+      "SearchResult": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "搜索查询"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "memory_type": {
+                  "type": "string"
+                },
+                "metadata": {
+                  "type": "object"
+                },
+                "similarity_score": {
+                  "type": "number",
+                  "description": "相似度分数（0-1）"
+                },
+                "created_at": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "total": {
+            "type": "integer",
+            "description": "搜索结果总数"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "description": "错误详情"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/memos": {
+      "get": {
+        "summary": "列出所有记忆",
+        "description": "获取用户的所有记忆列表（分页）",
+        "operationId": "listMemos",
+        "tags": ["Memos"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回数量限制（1-100）",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "分页偏移量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          {
+            "name": "memory_type",
+            "in": "query",
+            "description": "过滤记忆类型（text, image, audio, document）",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["text", "image", "audio", "document", "conversation"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功返回记忆列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MemoryUnit"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memos/search": {
+      "get": {
+        "summary": "搜索记忆",
+        "description": "使用语义搜索查找相关记忆",
+        "operationId": "searchMemos",
+        "tags": ["Memos"],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "搜索关键词",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "返回数量限制（1-50）",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功返回搜索结果",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memos/{memo_id}": {
+      "get": {
+        "summary": "获取单个记忆详情",
+        "description": "根据记忆ID获取详细信息",
+        "operationId": "getMemo",
+        "tags": ["Memos"],
+        "parameters": [
+          {
+            "name": "memo_id",
+            "in": "path",
+            "description": "记忆的唯一标识符",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功返回记忆详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryUnit"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "认证失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无权访问",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "记忆不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
