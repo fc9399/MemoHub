@@ -239,7 +239,14 @@ This project represents a complete implementation of an Agentic AI application m
 
 **Demo Video**: [Link to be added]  
 **Live Demo**: [Link to be added]  
-**GitHub Repository**: [Current repository]
+**GitHub Repository**: [(https://github.com/fc9399/MemoHub)]
+
+## 🙏 **Credits & Acknowledgments**
+
+### Team Members
+- **[Yunlan Qiao]** - Lead Developer, Frontend Architecture
+- **[Lin Jia]** - AI/ML Engineering, NIM Integration, Backend Architecture
+- **[Fung Chau]** - Backend Development, Testing
 
 ---
 
